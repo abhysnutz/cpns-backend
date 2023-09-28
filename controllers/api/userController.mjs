@@ -1,23 +1,28 @@
 import User from "../../models/User.mjs"
+import bcrypt from 'bcrypt'
 
 export const create = async (req,res) => {
     try {
         const {username, email, password} = req.body
 
-        const user = await User.create({
-            username, email, password
-        })
+        bcrypt.genSalt(10, function(err, salt) {
+            bcrypt.hash(password, salt, async function(err, hash) {
+                const user = await User.create({
+                    username, email, password : hash
+                })
 
-        return res.status(201).json({
-            "status":201,
-            "success":true,
-            "message":"User has been created",
-            "data":{
-                user:user
-            },
-            "error":null
-
-        })
+                return res.status(201).json({
+                    "status":201,
+                    "success":true,
+                    "message":"User has been created",
+                    "data":{
+                        user:user
+                    },
+                    "error":null
+                })
+            });
+        });
+        
     } catch (error) {
         return res.status(500).json({
             "status":500,
