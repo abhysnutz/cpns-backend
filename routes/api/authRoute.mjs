@@ -1,9 +1,9 @@
 import express from 'express'
-import { Login, Verify } from '../../controllers/api/authController.mjs'
+import { Login, MailVerify, Verify } from '../../controllers/api/authController.mjs'
 
 const router = express.Router()
 
 router.post('/api/auth/login', Login)
 router.post('/api/auth/verify', Verify)
-
+router.post('/api/auth/mail-verify', MailVerify)
 export default router;

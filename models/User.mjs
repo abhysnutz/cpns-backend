@@ -8,12 +8,16 @@ const User = database.define("users",{
     email : {
         type : DataTypes.STRING
     },
+    password : {
+        type : DataTypes.STRING
+    },
+    verify : {
+        type :DataTypes.BOOLEAN,
+        defaultValue : false
+    },
     referrer : {
         type : DataTypes.STRING
     },
-    password : {
-        type : DataTypes.STRING
-    }
 })
 
 export default User;
