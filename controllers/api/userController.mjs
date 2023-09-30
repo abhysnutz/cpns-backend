@@ -1,14 +1,37 @@
 import User from "../../models/User.mjs"
 import bcrypt from 'bcrypt'
 
+
+const checkMailExist = async (email) => {
+    let checkmail = 0;
+    checkmail = await User.findOne({ where: { email : email } });
+    return !!checkmail;
+}
+
 export const create = async (req,res) => {
+    const error = [];
+    let isMailExist = false;
     try {
-        const {username, email, password} = req.body
+        const {name, email, password, password_confirmation, referrer} = req.body
+
+        isMailExist = await checkMailExist(email);
+        if(isMailExist) error.push('Email tersebut telah digunakan.')
+        if(password.length == 0) error.push('Password harus diisi.')
+        if(password.length < 7) error.push('Password minimal 7 karakter.')
+        if(password != password_confirmation) error.push('Konfirmasi password tidak cocok.')
+
+        if(error.length){
+            return res.status(201).json({
+                "status":201,
+                "succeess":false,
+                "error":error,
+            });
+        }
 
         bcrypt.genSalt(10, function(err, salt) {
             bcrypt.hash(password, salt, async function(err, hash) {
                 const user = await User.create({
-                    username, email, password : hash
+                    name, email, password : hash, referrer
                 })
 
                 return res.status(201).json({
@@ -18,18 +41,18 @@ export const create = async (req,res) => {
                     "data":{
                         user:user
                     },
-                    "error":null
+                    "error":error
                 })
             });
         });
-        
-    } catch (error) {
+
+    } catch (err) {
         return res.status(500).json({
             "status":500,
             "success":false,
             "message":"User failed",
             "data":null,
-            "error":error.message
+            "error":error.push(err.message)
         })
     }
 }

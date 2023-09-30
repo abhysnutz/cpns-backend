@@ -4,16 +4,15 @@ import bcrypt from 'bcrypt'
 
 export const Login = async (req, res) => {
     try {
-        const {username, password} = req.body
-        const user = await User.findOne({ where: { username : username } });
+        const {email, password} = req.body
+        const user = await User.findOne({ where: { email : email } });
         const secretKey = 'abhysnutzabhyabhy'
 
         if(!user || !bcrypt.compareSync(password, user.password)){
             return res.status(201).json({
                 "status":"201",
-                "success":false,
-                "message":"Username atau Password salah",
-                "token":null
+                "token":null,
+                "message":'Kredensial tersebut tidak cocok dengan data kami.'
             })
         }
 
@@ -21,9 +20,8 @@ export const Login = async (req, res) => {
 
         return res.status(201).json({
             "status":"201",
-            "success":true,
-            "message":"Login Berhasil",
-            "token":token
+            "token":token,
+            "message":null
         }) 
     } catch (error) {
         res.status(500).json(error.message)
