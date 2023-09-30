@@ -4,6 +4,7 @@ import userRouter from './routes/api/userRoute.mjs';
 import authRouter from './routes/api/authRoute.mjs';
 import cors from 'cors'
 import dotenv from 'dotenv';
+import TestRouter from './routes/testRoute.mjs';
 
 const app = express()
 dotenv.config()
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
 
 app.use(userRouter)
 app.use(authRouter)
-
+app.use(TestRouter)
 
 app.listen(process.env.PORT, () => {
     console.log(`RUNNING PROGRAM ON PORT ${process.env.PORT}`);
