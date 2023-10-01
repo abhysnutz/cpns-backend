@@ -17,7 +17,7 @@ export const Login = async (req, res) => {
             })
         }
 
-        const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: 20 });
+        const token = jwt.sign({ userId: user.id, verify:user.verify }, secretKey, { expiresIn: 300 });
 
         return res.status(201).json({
             "status":"201",
@@ -33,17 +33,20 @@ export const Login = async (req, res) => {
 export const Verify = (req, res) => {
     const secretKey = process.env.JWT_SECRET_KEY
 
-    jwt.verify(req.body.token, secretKey, (err, decoded) => {
+    jwt.verify(req.body.token, secretKey, async (err, decoded) => {
         if (err) return res.status(200).json({ 'success':false,'message': 'Autentikasi tidak valid' });
-        return res.status(201).json({'success':true,'message':null})
-      });
+
+        const user = await User.findByPk(decoded.userId);
+
+        return res.status(201).json({'success':true,'message':null,"verify":user.verify})
+    });
 }
 
 export const MailVerify = async (req, res) => {
     let token = req.body.token;
-
+    let secretKey = process.env.JWT_SECRET_KEY
     try {
-        const decoded = jwt.verify(token,process.env.JWT_SECRET_KEY)
+        const decoded = jwt.verify(token,secretKey)
         const user = await User.findByPk(decoded.userId);
 
         if(!user) return res.status(404).json({"message":"Pengguna tidak ditemukan."})
@@ -51,8 +54,11 @@ export const MailVerify = async (req, res) => {
         
         await user.update({ verify: true })
 
+        const newtoken = jwt.sign({ userId: user.id, verify:user.verify }, secretKey, { expiresIn: 300 });
+
         return res.status(201).json({
             "message":"verifikasi telah berhasil",
+            "token":newtoken
         })   
     } catch (error) {
         return res.status(500).json({"error":error.message})

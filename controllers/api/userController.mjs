@@ -3,9 +3,9 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import MailVerify from "../../mail/verify.mjs";
 
-const createToken = (userId) => {
+const createToken = (userId,verify) => {
     let secret_key = process.env.JWT_SECRET_KEY;
-    return jwt.sign({ userId }, secret_key, { expiresIn: 1200 });
+    return jwt.sign({ userId,verify }, secret_key, { expiresIn: 10000 });
 }
 
 const checkMailExist = async (email) => {
@@ -40,7 +40,7 @@ export const create = async (req,res) => {
                     name, email, password : hash, referrer
                 })
 
-                let token = createToken(user.id);
+                let token = createToken(user.id,user.verify);
 
                 MailVerify(token)
                 return res.status(201).json({
