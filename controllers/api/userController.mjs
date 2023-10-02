@@ -1,9 +1,9 @@
 import User from "../../models/User.mjs"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import MailVerify from "../../mail/verify.mjs";
+import SendMailVerify from "../../mail/verify.mjs";
 
-const createToken = (userId,verify) => {
+export const createToken = (userId,verify) => {
     let secret_key = process.env.JWT_SECRET_KEY;
     return jwt.sign({ userId,verify }, secret_key, { expiresIn: 10000 });
 }
@@ -42,7 +42,7 @@ export const create = async (req,res) => {
 
                 let token = createToken(user.id,user.verify);
 
-                MailVerify(token)
+                SendMailVerify(token, user.email)
                 return res.status(201).json({
                     "status":201,
                     "success":true,
@@ -92,3 +92,4 @@ const checkExist = async (name, value) => {
     
     return !!user; // Return true if user exists, false otherwise
 };
+

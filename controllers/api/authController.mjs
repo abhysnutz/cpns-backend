@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import User from "../../models/User.mjs";
 import bcrypt from 'bcrypt'
 import { response } from "express";
+import { createToken } from "./userController.mjs";
+import SendMailVerify from "../../mail/verify.mjs";
 
 export const Login = async (req, res) => {
     try {
@@ -63,5 +65,17 @@ export const MailVerify = async (req, res) => {
     } catch (error) {
         return res.status(500).json({"error":error.message})
     }
-    
+}
+
+export const ResendToken = async (req, res) => {
+    const user = await User.findByPk(req.body.id);
+
+    try {
+        let token = createToken(user.id,user.verify);
+        SendMailVerify(token, user.email)
+        
+        return res.status(201).json({"message":"Email verifikasi berhasil dikirim. Silakan periksa kotak masuk atau spam."})
+    } catch (error) {
+        return res.status(500).json({"message":"Email verifikasi gagal dikirim","error":error.message})
+    }
 }
