@@ -15,6 +15,10 @@ const User = database.define("users",{
         type :DataTypes.BOOLEAN,
         defaultValue : false
     },
+    reset : {
+        type :DataTypes.STRING,
+        defaultValue : null
+    },
     referrer : {
         type : DataTypes.STRING
     },

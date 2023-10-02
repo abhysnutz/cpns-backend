@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import { response } from "express";
 import { createToken } from "./userController.mjs";
 import SendMailVerify from "../../mail/verify.mjs";
+import SendMailReset from "../../mail/resetPassword.mjs";
 
 export const Login = async (req, res) => {
     try {
@@ -77,5 +78,37 @@ export const ResendToken = async (req, res) => {
         return res.status(201).json({"message":"Email verifikasi berhasil dikirim. Silakan periksa kotak masuk atau spam."})
     } catch (error) {
         return res.status(500).json({"message":"Email verifikasi gagal dikirim","error":error.message})
+    }
+}
+
+function checkTokenExpired(tokenExpiry) {
+    const currentTime = new Date().getTime() / 1000;
+    return (tokenExpiry - currentTime);
+}
+
+export const ForgotPassword = async (req,res) => {
+    const email = req.body.email
+    try {
+        const user = await User.findOne({where : {email : email}})
+        if(!user) return res.status(201).json({"error":['Kami tidak menemukan akun dengan alamat email tersebut']});
+
+        if(user.reset){
+            let decoded = jwt.decode(user.reset);
+            if(checkTokenExpired(decoded.exp) > 0) return res.status(201).json({"error":[`Mohon coba lagi dalam ${Math.ceil(checkTokenExpired(decoded.exp))} detik`]});
+        }
+        
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: 30 });
+        await user.update({reset:token});
+
+        const signature = user.reset.split('.')[2];
+        SendMailReset(signature, user.email)
+
+        return res.status(201).json({
+            "error":[]
+        })
+    } catch (err) {
+        return res.status(500).json({
+            "error":[err.message]
+        })
     }
 }

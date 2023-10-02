@@ -1,6 +1,6 @@
 import { transporter } from "../config/mail.mjs";
 
-const Verify = (token, mail) => {
+const resetPassword = (signature, mail) => {
     const mailOptions = {
         from: 'abhy.riri.19@gmail.com',
         to: mail,
@@ -39,7 +39,7 @@ const Verify = (token, mail) => {
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'">
-                                                                                                            <a href="https://ayopppk.com/reset-password/e8004fbbe5a780fa4287648777a9b601270d997e8e650dc1e37f9ab1a298438f" class="m_3746435139244905121button" rel="noopener" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';border-radius:4px;color:#fff;display:inline-block;overflow:hidden;text-decoration:none;background-color:#2d3748;border-bottom:8px solid #2d3748;border-left:18px solid #2d3748;border-right:18px solid #2d3748;border-top:8px solid #2d3748" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://ayopppk.com/reset-password/e8004fbbe5a780fa4287648777a9b601270d997e8e650dc1e37f9ab1a298438f&amp;source=gmail&amp;ust=1696300812690000&amp;usg=AOvVaw3-L3XVH1rYzHv9BETF8_8Y">Reset Password</a>
+                                                                                                            <a href="http://localhost:5173/reset-password/${signature}" class="m_3746435139244905121button" rel="noopener" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';border-radius:4px;color:#fff;display:inline-block;overflow:hidden;text-decoration:none;background-color:#2d3748;border-bottom:8px solid #2d3748;border-left:18px solid #2d3748;border-right:18px solid #2d3748;border-top:8px solid #2d3748" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://localhost:5173/reset-password/${signature}">Reset Password</a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>
@@ -105,4 +105,4 @@ const Verify = (token, mail) => {
     });
 }
 
-export default Verify
+export default resetPassword
