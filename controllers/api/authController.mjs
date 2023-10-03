@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import User from "../../models/User.mjs";
 import bcrypt from 'bcrypt'
-import { response } from "express";
 import { createToken } from "./userController.mjs";
 import SendMailVerify from "../../mail/verify.mjs";
 import SendMailReset from "../../mail/resetPassword.mjs";
+import { Op } from "sequelize";
 
 export const Login = async (req, res) => {
     try {
@@ -16,7 +16,7 @@ export const Login = async (req, res) => {
             return res.status(201).json({
                 "status":"201",
                 "token":null,
-                "message":'Kredensial tersebut tidak cocok dengan data kami.'
+                "error":['Kredensial tersebut tidak cocok dengan data kami.']
             })
         }
 
@@ -28,7 +28,7 @@ export const Login = async (req, res) => {
             "message":null
         }) 
     } catch (error) {
-        res.status(500).json(error.message)
+        res.status(500).json({"error":[error.message]})
     }
     
 }
@@ -97,11 +97,11 @@ export const ForgotPassword = async (req,res) => {
             if(checkTokenExpired(decoded.exp) > 0) return res.status(201).json({"error":[`Mohon coba lagi dalam ${Math.ceil(checkTokenExpired(decoded.exp))} detik`]});
         }
         
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: 30 });
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: 900 });
         await user.update({reset:token});
 
         const signature = user.reset.split('.')[2];
-        SendMailReset(signature, user.email)
+        SendMailReset(signature, user.name, user.email)
 
         return res.status(201).json({
             "error":[]
@@ -111,4 +111,36 @@ export const ForgotPassword = async (req,res) => {
             "error":[err.message]
         })
     }
+}
+
+export const GetResetPassword = async (req,res) => {
+    try {
+        const signature = req.query.signature
+        const user = await User.findOne({where: {reset :{[Op.like]: `%${signature}`}}})
+        if(!user) return res.status(201).json({"error":['Link tidak valid']})
+
+        let decoded = jwt.decode(user.reset);
+        if(checkTokenExpired(decoded.exp) < 0) return res.status(201).json({"error":[`Link kadaluarsa, harap mengirim email kembali melalui halaman lupa password.`]});
+        
+        return res.status(201).json({"email":user.email})
+        
+    } catch (error) {
+        return res.status(500).json({"error":error.message})
+    }
+}
+
+export const SetResetPassword = async (req,res) => {
+    const {email, password, password_confirmation} = req.body;
+    
+    const user = await User.findOne({where: {email : email}});
+
+    if(!user) return res.status(201).json({"error":"Pengguna dengan email ini tidak ditemukan"})
+
+    if(password.length < 7) return res.status(201).json({"error":"Password minimal 7 karakter"})
+
+    if(password != password_confirmation) return res.status(201).json({"error":"Password konfirmasi tidak cocok"})
+
+    const hash = bcrypt.hashSync(password,10);
+    user.update({password:hash, reset:null})
+    return res.status(201).json({"error":null})
 }

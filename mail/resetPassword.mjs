@@ -1,6 +1,6 @@
 import { transporter } from "../config/mail.mjs";
 
-const resetPassword = (signature, mail) => {
+const resetPassword = (signature, name, mail) => {
     const mailOptions = {
         from: 'abhy.riri.19@gmail.com',
         to: mail,
@@ -14,8 +14,8 @@ const resetPassword = (signature, mail) => {
                                 <tbody>
                                     <tr>
                                         <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';padding:25px 0;text-align:center">
-                                            <a href="https://ayopppk.com" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3d4852;font-size:19px;font-weight:bold;text-decoration:none;display:inline-block" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://ayopppk.com&amp;source=gmail&amp;ust=1696300812690000&amp;usg=AOvVaw2ha31K396Q4Xkc26lgiL_3">
-                                            AYOPPPK
+                                            <a href="${process.env.FRONTEND_URL}" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3d4852;font-size:19px;font-weight:bold;text-decoration:none;display:inline-block" target="_blank">
+                                                ${process.env.APP_NAME}
                                             </a>
                                         </td>
                                     </tr>
@@ -25,8 +25,8 @@ const resetPassword = (signature, mail) => {
                                                 <tbody>
                                                     <tr>
                                                         <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';max-width:100vw;padding:32px">
-                                                            <h1 style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3d4852;font-size:18px;font-weight:bold;margin-top:0;text-align:left">Halo kak Mohamad Syafri Lamato,</h1>
-                                                            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:16px;line-height:1.5em;margin-top:0;text-align:left">Kamu menerima email ini karena melakukan permintaan reset password akun AYOPPPK.</p>
+                                                            <h1 style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3d4852;font-size:18px;font-weight:bold;margin-top:0;text-align:left">Halo kak ${name},</h1>
+                                                            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:16px;line-height:1.5em;margin-top:0;text-align:left">Kamu menerima email ini karena melakukan permintaan reset password akun ${process.env.APP_NAME}.</p>
                                                             <table align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';margin:30px auto;padding:0;text-align:center;width:100%">
                                                                 <tbody>
                                                                     <tr>
@@ -39,7 +39,7 @@ const resetPassword = (signature, mail) => {
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'">
-                                                                                                            <a href="http://localhost:5173/reset-password/${signature}" class="m_3746435139244905121button" rel="noopener" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';border-radius:4px;color:#fff;display:inline-block;overflow:hidden;text-decoration:none;background-color:#2d3748;border-bottom:8px solid #2d3748;border-left:18px solid #2d3748;border-right:18px solid #2d3748;border-top:8px solid #2d3748" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://localhost:5173/reset-password/${signature}">Reset Password</a>
+                                                                                                            <a href="${process.env.FRONTEND_URL}/reset-password/${signature}" class="m_3746435139244905121button" rel="noopener" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';border-radius:4px;color:#fff;display:inline-block;overflow:hidden;text-decoration:none;background-color:#2d3748;border-bottom:8px solid #2d3748;border-left:18px solid #2d3748;border-right:18px solid #2d3748;border-top:8px solid #2d3748" target="_blank">Reset Password</a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>
@@ -55,14 +55,14 @@ const resetPassword = (signature, mail) => {
                                                             <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:16px;line-height:1.5em;margin-top:0;text-align:left">Link reset password akan kedaluwarsa dalam waktu 60 menit.</p>
                                                             <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:16px;line-height:1.5em;margin-top:0;text-align:left">Abaikan email ini apabila kakak tidak merasa melakukan permintaan reset password. Terima kasih.</p>
                                                             <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:16px;line-height:1.5em;margin-top:0;text-align:left">Regards,<br>
-                                                                AYOPPPK
+                                                                ${process.env.APP_NAME}
                                                             </p>
                                                             <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';border-top:1px solid #e8e5ef;margin-top:25px;padding-top:25px">
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'">
                                                                             <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.5em;margin-top:0;text-align:left;font-size:14px">If you're having trouble clicking the "Reset Password" button, copy and paste the URL below
-                                                                                into your web browser: <span style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';word-break:break-all"><a href="https://ayopppk.com/reset-password/e8004fbbe5a780fa4287648777a9b601270d997e8e650dc1e37f9ab1a298438f" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3869d4" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://ayopppk.com/reset-password/e8004fbbe5a780fa4287648777a9b601270d997e8e650dc1e37f9ab1a298438f&amp;source=gmail&amp;ust=1696300812690000&amp;usg=AOvVaw3-L3XVH1rYzHv9BETF8_8Y">https://ayopppk.com/reset-<wbr>password/<wbr>e8004fbbe5a780fa4287648777a9b6<wbr>01270d997e8e650dc1e37f9ab1a298<wbr>438f</a></span>
+                                                                                into your web browser: <span style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';word-break:break-all"><a href="${process.env.FRONTEND_URL}/reset-password/${signature}" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3869d4" target="_blank">${process.env.FRONTEND_URL}/reset-password/${signature}</a></span>
                                                                             </p>
                                                                         </td>
                                                                     </tr>
@@ -80,7 +80,7 @@ const resetPassword = (signature, mail) => {
                                                 <tbody>
                                                     <tr>
                                                         <td align="center" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';max-width:100vw;padding:32px">
-                                                            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.5em;margin-top:0;color:#b0adc5;font-size:12px;text-align:center">© 2023 AYOPPPK. All rights reserved.</p>
+                                                            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.5em;margin-top:0;color:#b0adc5;font-size:12px;text-align:center">© 2023 ${process.env.APP_NAME}. All rights reserved.</p>
                                                         </td>
                                                     </tr>
                                                 </tbody>
