@@ -1,7 +1,8 @@
 import User from "../../models/User.mjs"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import SendMailVerify from "../../mail/verify.mjs";
+import SendMailVerify from "../../mail/verifyMail.mjs";
+import config from "../../config/app.mjs";
 
 export const createToken = (userId,verify) => {
     let secret_key = process.env.JWT_SECRET_KEY;
@@ -34,28 +35,31 @@ export const create = async (req,res) => {
             });
         }
 
-        bcrypt.genSalt(10, function(err, salt) {
-            bcrypt.hash(password, salt, async function(err, hash) {
-                const user = await User.create({
-                    name, email, password : hash, referrer
-                })
+        const isNeedVerify = config.isNeedVerify == true ? 0 : 1;
 
-                let token = createToken(user.id,user.verify);
+        const hash = bcrypt.hashSync(password,10);
+        const user = await User.create({
+            name,
+            email,
+            password : hash,
+            referrer, 
+            verify: isNeedVerify
+        })
 
-                SendMailVerify(token, user.email)
-                return res.status(201).json({
-                    "status":201,
-                    "success":true,
-                    "message":"User has been created",
-                    "token":token,
-                    "data":{
-                        user:user
-                    },
-                    "error":error
-                })
-            });
+        const token = createToken(user.id,user.verify);
+
+        if(!isNeedVerify) SendMailVerify(token, user.name, user.email)
+
+        return res.status(201).json({
+            "status":201,
+            "success":true,
+            "message":"User has been created",
+            "token":token,
+            "data":{
+                user:user
+            },
+            "error":error
         });
-
     } catch (err) {
         return res.status(500).json({
             "status":500,
@@ -66,30 +70,3 @@ export const create = async (req,res) => {
         })
     }
 }
-
-export const validate = async (req, res) => {
-    try {
-        const {name, value} = req.body
-        let Exist = await checkExist(name, value);
-        return res.status(201).json({
-            "status":201,
-            "exist":Exist ? 1 : 0,
-            "error":null
-        })
-    } catch (error) {
-        return res.status(500).json({
-            "status":500,
-            "exist":1,
-            "error":error.message
-        })
-    }
-}
-
-const checkExist = async (name, value) => {
-    let user = 0;
-    if(name == 'username') user = await User.findOne({ where: { username : value } });
-    if(name == 'email') user = await User.findOne({ where: { email : value } });
-    
-    return !!user; // Return true if user exists, false otherwise
-};
-

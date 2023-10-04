@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../../models/User.mjs";
 import bcrypt from 'bcrypt'
 import { createToken } from "./userController.mjs";
-import SendMailVerify from "../../mail/verify.mjs";
+import SendMailVerify from "../../mail/verifyMail.mjs";
 import SendMailReset from "../../mail/resetPassword.mjs";
 import { Op } from "sequelize";
 
@@ -73,7 +73,7 @@ export const ResendToken = async (req, res) => {
 
     try {
         let token = createToken(user.id,user.verify);
-        SendMailVerify(token, user.email)
+        SendMailVerify(token, user.name, user.email)
         
         return res.status(201).json({"message":"Email verifikasi berhasil dikirim. Silakan periksa kotak masuk atau spam."})
     } catch (error) {
@@ -83,7 +83,7 @@ export const ResendToken = async (req, res) => {
 
 function checkTokenExpired(tokenExpiry) {
     const currentTime = new Date().getTime() / 1000;
-    return (tokenExpiry - currentTime);
+    return (tokenExpiry - currentTime - 3480);
 }
 
 export const ForgotPassword = async (req,res) => {
@@ -97,7 +97,7 @@ export const ForgotPassword = async (req,res) => {
             if(checkTokenExpired(decoded.exp) > 0) return res.status(201).json({"error":[`Mohon coba lagi dalam ${Math.ceil(checkTokenExpired(decoded.exp))} detik`]});
         }
         
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: 900 });
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: 3600 });
         await user.update({reset:token});
 
         const signature = user.reset.split('.')[2];
