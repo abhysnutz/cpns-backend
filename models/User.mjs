@@ -15,7 +15,7 @@ const User = database.define("users",{
         type :DataTypes.BOOLEAN,
         defaultValue : false
     },
-    reset : {
+    session : {
         type :DataTypes.STRING,
         defaultValue : null
     },

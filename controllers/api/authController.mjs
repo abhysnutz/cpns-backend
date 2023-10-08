@@ -20,7 +20,9 @@ export const Login = async (req, res) => {
             })
         }
 
-        const token = jwt.sign({ userId: user.id, verify:user.verify }, secretKey, { expiresIn: 300 });
+        const token = jwt.sign({ userId: user.id, verify:user.verify, session:'auth'}, secretKey);
+
+        await user.update({ session : token })
 
         return res.status(201).json({
             "status":"201",
@@ -55,9 +57,9 @@ export const MailVerify = async (req, res) => {
         if(!user) return res.status(404).json({"message":"Pengguna tidak ditemukan."})
         if(user.verify) return res.status(400).json({"message":"Pengguna telah di verifikasi sebelumnya."})
         
-        await user.update({ verify: true })
+        const newtoken = jwt.sign({ userId: user.id, verify:true, session : 'auth'}, secretKey);
 
-        const newtoken = jwt.sign({ userId: user.id, verify:user.verify }, secretKey, { expiresIn: 300 });
+        await user.update({ verify: true, session : newtoken })
 
         return res.status(201).json({
             "message":"verifikasi telah berhasil",
@@ -92,15 +94,15 @@ export const ForgotPassword = async (req,res) => {
         const user = await User.findOne({where : {email : email}})
         if(!user) return res.status(201).json({"error":['Kami tidak menemukan akun dengan alamat email tersebut']});
 
-        if(user.reset){
-            let decoded = jwt.decode(user.reset);
+        if(user.session){
+            let decoded = jwt.decode(user.session);
             if(checkTokenExpired(decoded.exp) > 0) return res.status(201).json({"error":[`Mohon coba lagi dalam ${Math.ceil(checkTokenExpired(decoded.exp))} detik`]});
         }
         
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: 3600 });
-        await user.update({reset:token});
+        const token = jwt.sign({ userId: user.id, session:'reset'}, process.env.JWT_SECRET_KEY, { expiresIn: 3600 });
+        await user.update({session:token});
 
-        const signature = user.reset.split('.')[2];
+        const signature = user.session.split('.')[2];
         SendMailReset(signature, user.name, user.email)
 
         return res.status(201).json({
@@ -116,11 +118,12 @@ export const ForgotPassword = async (req,res) => {
 export const GetResetPassword = async (req,res) => {
     try {
         const signature = req.query.signature
-        const user = await User.findOne({where: {reset :{[Op.like]: `%${signature}`}}})
+        const user = await User.findOne({where: {session :{[Op.like]: `%${signature}`}}})
         if(!user) return res.status(201).json({"error":['Link tidak valid']})
 
-        let decoded = jwt.decode(user.reset);
-        if(checkTokenExpired(decoded.exp) < 0) return res.status(201).json({"error":[`Link kadaluarsa, harap mengirim email kembali melalui halaman lupa password.`]});
+        let decoded = jwt.decode(user.session);
+        
+        if(decoded.session != 'reset' || checkTokenExpired(decoded.exp) < 0) return res.status(201).json({"error":[`Link kadaluarsa, harap mengirim email kembali melalui halaman lupa password.`]});
         
         return res.status(201).json({"email":user.email})
         
@@ -143,4 +146,13 @@ export const SetResetPassword = async (req,res) => {
     const hash = bcrypt.hashSync(password,10);
     user.update({password:hash, reset:null})
     return res.status(201).json({"error":null})
+}
+
+export const SessionVerify = async (req, res) => {
+    const {userId, token} = req.body
+    
+    const user = await User.findOne({where : {id:userId, session :{[Op.like]: `%${token}`}}})
+    if(user) return res.status(201).json({ "session":true });
+    
+    return res.status(201).json({ "session":false });
 }

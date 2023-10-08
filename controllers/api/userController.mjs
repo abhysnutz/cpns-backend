@@ -4,9 +4,9 @@ import jwt from 'jsonwebtoken'
 import SendMailVerify from "../../mail/verifyMail.mjs";
 import config from "../../config/app.mjs";
 
-export const createToken = (userId,verify) => {
+export const createToken = (userId,verify,session) => {
     let secret_key = process.env.JWT_SECRET_KEY;
-    return jwt.sign({ userId,verify }, secret_key, { expiresIn: 10000 });
+    return jwt.sign({ userId,verify,session }, secret_key);
 }
 
 const checkMailExist = async (email) => {
@@ -38,15 +38,18 @@ export const create = async (req,res) => {
         const isNeedVerify = config.isNeedVerify == true ? 0 : 1;
 
         const hash = bcrypt.hashSync(password,10);
+
         const user = await User.create({
             name,
             email,
             password : hash,
-            referrer, 
+            referrer,
             verify: isNeedVerify
         })
+        
+        const token = createToken(user.id,user.verify,'mailverify');
 
-        const token = createToken(user.id,user.verify);
+        await user.update({session : token})
 
         if(!isNeedVerify) SendMailVerify(token, user.name, user.email)
 
