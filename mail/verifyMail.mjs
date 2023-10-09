@@ -2,7 +2,7 @@ import { transporter } from "../config/mail.mjs";
 
 const VerifyMail = (token, name, mail) => {
     const mailOptions = {
-        from: process.env.APP_MAIL_FROM,
+        from: process.env.MAIL_FROM_NAME,
         to: mail,
         subject: `Verifikasi Alamat Email`,
         html: `
@@ -61,7 +61,7 @@ const VerifyMail = (token, name, mail) => {
                                                                     <tr>
                                                                         <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'">
                                                                             <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.5em;margin-top:0;text-align:left;font-size:14px">If you're having trouble clicking the "Verifikasi Email" button, copy and paste the URL below
-                                                                                into your web browser: <span style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';word-break:break-all"><a href="http://localhost:5173/verify-email?tokenauth=${token}" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3869d4" target="_blank" data-saferedirecturl="http://localhost:5173/verify-email?tokenauth=${token}">${process.env.FRONTEND_URL}/verify-email?tokenauth=${token}</a></span>
+                                                                                into your web browser: <span style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';word-break:break-all"><a href="${process.env.FRONTEND_URL}/verify-email?tokenauth=${token}" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3869d4" target="_blank" data-saferedirecturl="${process.env.FRONTEND_URL}/verify-email?tokenauth=${token}">${process.env.FRONTEND_URL}/verify-email?tokenauth=${token}</a></span>
                                                                             </p>
                                                                         </td>
                                                                     </tr>

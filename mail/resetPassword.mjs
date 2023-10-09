@@ -2,7 +2,7 @@ import { transporter } from "../config/mail.mjs";
 
 const resetPassword = (signature, name, mail) => {
     const mailOptions = {
-        from: process.env.APP_MAIL_FROM,
+        from: process.env.MAIL_FROM_NAME,
         to: mail,
         subject: `Reset Password`,
         html: `
