@@ -18,10 +18,8 @@ const User = database.define("users",{
     session : {
         type :DataTypes.STRING,
         defaultValue : null
-    },
-    referrer : {
-        type : DataTypes.STRING
-    },
+    }
 })
+
 
 export default User;

@@ -58,7 +58,7 @@ export const MailVerify = async (req, res) => {
         if(user.verify) return res.status(400).json({"message":"Pengguna telah di verifikasi sebelumnya."})
         
         const newtoken = jwt.sign({ userId: user.id, verify:true, session : 'auth'}, secretKey);
-
+        
         await user.update({ verify: true, session : newtoken })
 
         return res.status(201).json({

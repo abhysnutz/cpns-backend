@@ -1,6 +1,9 @@
 // import {createTransport} from 'nodemailer'
 import nodemailer from 'nodemailer'
 import { transporter } from '../config/mail.mjs';
+import axios from 'axios';
+import Province from '../models/Province.mjs';
+import City from '../models/City.mjs';
 
 export const Mail = (req,res) => {
     const mailOptions = {
@@ -104,4 +107,47 @@ export const Mail = (req,res) => {
             console.log('Email sent: ' + info.response);
         }
     });
+}
+
+export const GetProvince = async (req, res) => {
+    console.log('province');
+    
+    try {
+        const response = await axios.get(`https://api.binderbyte.com/wilayah/provinsi`,{
+            params : {
+                "api_key":"720d3543b26bf0a59e2e3840615672c15f525ab160778269b78e863319358d39"
+            }
+        })
+        let provinces = response.data.value;
+        res.send(provinces)
+        provinces.map(async province => {
+            await Province.create({name:province.name, old:province.id})
+        })
+    } catch (error) {
+        console.error(error.messsage);
+    }
+
+}
+
+export const GetCity = async (req, res) => {
+    const provinces = await Province.findAll({})
+    provinces.map(async province => {
+        await axios.get(`https://api.binderbyte.com/wilayah/kabupaten`,{
+            params : {
+                "api_key":"720d3543b26bf0a59e2e3840615672c15f525ab160778269b78e863319358d39",
+                "id_provinsi":province.old
+            }
+        })
+        .then(async response => {
+            let cities = response.data.value
+            cities.map(async city => {
+                await City.create({name:city.name, provinceId:province.id})
+            })
+        })
+        .catch(error => {
+            console.error(error.message);
+        })
+    })
+
+    res.send('finish')
 }
